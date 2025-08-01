@@ -87,7 +87,7 @@ export default function MyBooks({ token }) {
                 <tr>
                   <th style={{ width: '10%' }}>Image</th>
                   <th>Title</th>
-                  <th>Type</th>
+                  {/* <th>Type</th> */}
                   <th>Condition</th>
                   {/* --- NEW STATUS COLUMN --- */}
                   <th>Status</th>
@@ -106,7 +106,6 @@ export default function MyBooks({ token }) {
                         />
                       </td>
                       <td>{book.title}</td>
-                      <td><span className={`badge text-bg-${book.type === 'sell' ? 'success' : 'info'}`}>{book.type}</span></td>
                       <td>{book.condition}</td>
                       {/* --- DISPLAY THE BOOK STATUS --- */}
                       <td>
