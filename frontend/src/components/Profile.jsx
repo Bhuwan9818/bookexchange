@@ -6,7 +6,6 @@ import EditProfileModal from './EditProfileModal';
 
 export default function Profile({ token }) {
     const [profile, setProfile] = useState(null);
-    const [givenRatings, setGivenRatings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -17,15 +16,12 @@ export default function Profile({ token }) {
         // Don't set loading to true here on every focus, only on initial load.
         // This prevents a jarring "Loading..." flicker.
         try {
-            const [profileRes, givenRatingsRes] = await Promise.all([
-                fetch('http://localhost:5000/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch('http://localhost:5000/api/user/ratings/given', { headers: { 'Authorization': `Bearer ${token}` } })
+            const [profileRes] = await Promise.all([
+                fetch('http://localhost:5000/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
-            if (!profileRes.ok || !givenRatingsRes.ok) throw new Error('Failed to fetch profile data');
+            if (!profileRes.ok ) throw new Error('Failed to fetch profile data');
             const profileData = await profileRes.json();
-            const givenRatingsData = await givenRatingsRes.json();
             setProfile(profileData);
-            setGivenRatings(givenRatingsData);
         } catch (error) {
             toast.error(error.message);
         } finally {

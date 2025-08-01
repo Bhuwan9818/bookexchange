@@ -10,13 +10,8 @@ export default function Requests({ token }) {
   const [requests, setRequests] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [contactInfo, setContactInfo] = useState(null);
-  const [showDeliverConfirmModal, setShowDeliverConfirmModal] = useState(false);
-  const [requestToDeliver, setRequestToDeliver] = useState(null);
-  const [showRatingModal, setShowRatingModal] = useState(false);
-  const [requestToRate, setRequestToRate] = useState(null);
   const navigate = useNavigate();
 
-  const handleCloseChat = useCallback(() => setChatRequest(null), []);
   
 
   useEffect(() => {
@@ -42,48 +37,6 @@ export default function Requests({ token }) {
     } catch(err) { toast.error(err.message); }
   };
 
-  // --- THIS IS THE MISSING FUNCTION ---
-  const handleMarkAsSent = async (requestId) => {
-    try {
-      await fetch(`http://localhost:5000/api/requests/${requestId}/sent`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setRequests(requests.map(req => req._id === requestId ? { ...req, deliveryStatus: 'sent' } : req));
-      toast.success('Marked as sent! Waiting for receiver to confirm.');
-    } catch (error) { toast.error(error.message || 'Failed to mark as sent'); }
-  };
-
-  const handleDeliverClick = (request) => {
-    setRequestToDeliver(request);
-    setShowDeliverConfirmModal(true);
-  };
-
-  const handleCloseDeliverModal = () => {
-    setRequestToDeliver(null);
-    setShowDeliverConfirmModal(false);
-  };
-
-  const handleConfirmDelivery = async () => {
-    if (!requestToDeliver) return;
-    try {
-      await fetch(`http://localhost:5000/api/requests/${requestToDeliver._id}/receive`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setRequests(requests.map(req => req._id === requestToDeliver._id ? { ...req, deliveryStatus: 'received' } : req));
-      toast.success('Receipt confirmed! The transaction is complete.');
-    } catch (error) {
-      toast.error(error.message || 'Failed to confirm receipt');
-    } finally {
-      handleCloseDeliverModal();
-    }
-  };
-
-  const handleRateClick = (request) => {
-    setRequestToRate(request);
-    setShowRatingModal(true);
-  };
 
   const infoToShow = contactInfo && contactInfo.owner ? (currentUserId === contactInfo.owner._id ? contactInfo.requester : contactInfo.owner) : null;
   const incoming = requests.filter(req => req.ownerId._id === currentUserId);
@@ -98,10 +51,6 @@ export default function Requests({ token }) {
 
   return (
     <div className="container py-2">
-      <ConfirmationModal show={showDeliverConfirmModal} onClose={handleCloseDeliverModal} onConfirm={handleConfirmDelivery} title="Confirm Receipt" confirmText="Yes, I've Received It" confirmButtonClass="btn-success">
-        <p>Please confirm that you have received the book titled: <strong>"{requestToDeliver?.bookId?.title}"</strong>?</p>
-        <p className="text-muted">This will complete the transaction.</p>
-      </ConfirmationModal>
 
       <h2 className="mb-4">My Requests</h2>
       {infoToShow && (
@@ -128,15 +77,9 @@ export default function Requests({ token }) {
                 <td>{req.bookId.title}</td><td>{req.requesterId.username}</td>
                 <td>
                   <span className={`badge rounded-pill text-bg-${req.status === 'accepted' ? 'success' : 'warning'}`}>{req.status}</span>
-                  {req.deliveryStatus === 'sent' && <span className="badge rounded-pill text-bg-info ms-2">Sent</span>}
-                  {req.deliveryStatus === 'received' && <span className="badge rounded-pill text-bg-dark ms-2">Completed</span>}
                 </td>
                 <td className="text-end"><div className="d-flex justify-content-end gap-2">
                     {req.status === 'pending' && (<><button onClick={() => handleStatusUpdate(req._id, 'accepted')} className="btn btn-success btn-sm">Accept</button><button onClick={() => handleStatusUpdate(req._id, 'rejected')} className="btn btn-danger btn-sm">Reject</button></>)}
-                    {req.status === 'accepted' && req.deliveryStatus === 'pending' && (
-                        <button onClick={() => handleMarkAsSent(req._id)} className="btn btn-warning btn-sm">Mark as Sent</button>
-                    )}
-                    {req.status === 'accepted' && req.deliveryStatus === 'sent' && (<span className="text-muted fst-italic">Waiting for receiver...</span>)}
                 </div></td>
             </tr>))}</tbody>
           </table>
@@ -157,9 +100,7 @@ export default function Requests({ token }) {
                 </td>
                 <td className="text-end"><div className="d-flex justify-content-end gap-2">
                     {req.status === 'accepted' && req.deliveryStatus === 'sent' && (<button onClick={() => handleDeliverClick(req)} className="btn btn-success btn-sm">Confirm Receipt</button>)}
-                    {req.status === 'accepted' && (<><button onClick={() => viewContact(req._id)} className="btn btn-secondary btn-sm">Contact</button><button onClick={() => setChatRequest(req)} className="btn btn-primary btn-sm">Chat</button></>)}
-                    {req.deliveryStatus === 'received' && !hasUserRated(req) && (<button onClick={() => handleRateClick(req)} className="btn btn-info btn-sm">Rate Owner</button>)}
-                    {req.deliveryStatus === 'received' && hasUserRated(req) && (<span className="text-muted fst-italic ms-2"><i className="bi bi-check-circle-fill text-success"></i> Rated</span>)}
+                    {req.status === 'accepted' && (<><button onClick={() => viewContact(req._id)} className="btn btn-secondary btn-sm">Contact</button></>)}
                 </div></td>
             </tr>))}</tbody>
           </table>

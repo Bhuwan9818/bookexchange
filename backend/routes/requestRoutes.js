@@ -53,64 +53,6 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-// POST /api/requests/:id/deliver
-router.post('/:id/deliver', auth, async (req, res) => {
-  try {
-    let request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ msg: 'Request not found' });
-    if (request.requesterId.toString() !== req.userId) return res.status(401).json({ msg: 'User not authorized' });
-    if (request.status !== 'accepted') return res.status(400).json({ msg: 'Cannot confirm receipt for a request that is not accepted.' });
-    if (request.isDelivered) return res.status(400).json({ msg: 'This request has already been marked as received.' });
-    request.isDelivered = true;
-    await request.save();
-    await Book.findByIdAndUpdate(request.bookId, { status: 'exchanged' });
-    res.json(request);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// --- NEW ROUTE 1: Mark as SENT (by the Owner) ---
-router.post('/:id/sent', auth, async (req, res) => {
-    try {
-      let request = await Request.findById(req.params.id);
-      if (!request) return res.status(404).json({ msg: 'Request not found' });
-  
-      // Only the book OWNER can mark it as sent
-      if (request.ownerId.toString() !== req.userId) {
-        return res.status(401).json({ msg: 'User not authorized' });
-      }
-      if (request.status !== 'accepted') return res.status(400).json({ msg: 'Request not accepted' });
-  
-      request.deliveryStatus = 'sent';
-      await request.save();
-      res.json(request);
-    } catch (err) { res.status(500).send('Server Error'); }
-  });
-  
-  // --- NEW ROUTE 2: Mark as RECEIVED (by the Requester) ---
-  router.post('/:id/receive', auth, async (req, res) => {
-    try {
-      let request = await Request.findById(req.params.id);
-      if (!request) return res.status(404).json({ msg: 'Request not found' });
-  
-      // Only the book REQUESTER can mark it as received
-      if (request.requesterId.toString() !== req.userId) {
-        return res.status(401).json({ msg: 'User not authorized' });
-      }
-      // Can only be received if it has been marked as sent first
-      if (request.deliveryStatus !== 'sent') return res.status(400).json({ msg: 'Book has not been marked as sent by the owner yet.' });
-  
-      // Update the request and the book status
-      request.deliveryStatus = 'received';
-      await request.save();
-      await Book.findByIdAndUpdate(request.bookId, { status: 'exchanged' });
-  
-      res.json(request);
-    } catch (err) { res.status(500).send('Server Error'); }
-  });
-  
 
 // GET /api/requests/:id/contact
 router.get('/:id/contact', auth, async (req, res) => {
