@@ -8,8 +8,6 @@ const bookSchema = new mongoose.Schema({
     enum: ['New', 'Like New', 'Good', 'Fair', 'Used'],
     required: true,
   },
-  // type: { type: String, enum: ['sell', 'lend'], required: true },
-  // price: { type: Number, default: 0 },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   imageUrl: { type: String, required: true },
 
