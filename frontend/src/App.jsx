@@ -48,7 +48,6 @@ function App() {
             <Route path="/requests" element={<Requests token={token} />} />
             <Route path="/my-books" element={<MyBooks token={token} />} />
             <Route path="/profile" element={<Profile token={token} />} />
-            {/* <Route path="/wishlist" element={<Wishlist token={token} />} /> */}
           </Routes>
         </main>
       </div>

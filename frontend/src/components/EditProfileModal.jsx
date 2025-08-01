@@ -6,8 +6,6 @@ export default function EditProfileModal({ show, onClose, currentUser, onUpdate 
     const [formData, setFormData] = useState({
         username: '', phone: '', city: '', state: ''
     });
-
-    // When the modal is shown, pre-fill the form with the user's current data
     useEffect(() => {
         if (currentUser) {
             setFormData({
@@ -29,7 +27,7 @@ export default function EditProfileModal({ show, onClose, currentUser, onUpdate 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate(formData); // Call the update function passed from the parent
+        onUpdate(formData); 
     };
 
     return (

@@ -15,9 +15,7 @@ export default function MyBooks({ token }) {
       return;
     }
     fetchMyBooks();
-  }, [token, navigate]); // Removed fetchMyBooks from here to prevent loops
-
-  // We define fetchMyBooks outside useEffect so it can be called again after a deletion
+  }, [token, navigate]); 
   const fetchMyBooks = async () => {
     try {
       const res = await fetch('http://localhost:5000/api/books/my-books', {

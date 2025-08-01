@@ -9,9 +9,6 @@ const Book = require('../models/Book');
 
 
 // --- PROFILE ROUTE ---
-
-// @route   GET /api/user/profile
-// @desc    Get the logged-in user's own profile
 router.get('/profile', auth, async (req, res) => {
     try {
         const user = await User.findById(req.userId)

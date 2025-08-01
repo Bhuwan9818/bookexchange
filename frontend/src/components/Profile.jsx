@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// import StarRating from './StarRating';
 import EditProfileModal from './EditProfileModal';
 
 export default function Profile({ token }) {
@@ -9,12 +8,8 @@ export default function Profile({ token }) {
     const [loading, setLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const navigate = useNavigate();
-
-    // The function to fetch data is perfect as is.
     const fetchAllData = useCallback(async () => {
         if (!token) return;
-        // Don't set loading to true here on every focus, only on initial load.
-        // This prevents a jarring "Loading..." flicker.
         try {
             const [profileRes] = await Promise.all([
                 fetch('http://localhost:5000/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } })
@@ -25,19 +20,15 @@ export default function Profile({ token }) {
         } catch (error) {
             toast.error(error.message);
         } finally {
-            setLoading(false); // Stop loading once done.
+            setLoading(false); 
         }
     }, [token]);
 
-    // This useEffect handles the INITIAL data load when the component first mounts.
     useEffect(() => {
         if (!token) navigate('/login');
         else fetchAllData();
     }, [token, navigate, fetchAllData]);
 
-    // --- THIS IS THE NEW FIX ---
-    // This useEffect adds an event listener to re-fetch data whenever the
-    // user navigates back to this page or brings the browser tab into focus.
     useEffect(() => {
         const handleFocus = () => {
             console.log("Window focused, re-fetching profile data...");
@@ -46,15 +37,10 @@ export default function Profile({ token }) {
 
         // Add the event listener
         window.addEventListener('focus', handleFocus);
-
-        // Cleanup function: This is crucial to prevent memory leaks.
-        // It removes the listener when the component unmounts.
         return () => {
             window.removeEventListener('focus', handleFocus);
         };
-    }, [fetchAllData]); // The dependency array ensures the listener always has the latest fetchAllData function.
-
-    // The handler for the "Edit Profile" modal also re-fetches data.
+    }, [fetchAllData]); 
     const handleProfileUpdate = async (updatedData) => {
         try {
             await fetch('http://localhost:5000/api/user/profile', {
@@ -73,7 +59,6 @@ export default function Profile({ token }) {
     if (loading) return <div className="text-center p-5"><h4>Loading Profile...</h4></div>;
     if (!profile) return <div className="text-center p-5"><h4>Could not load profile.</h4></div>;
 
-    // The JSX part of your component is correct and remains unchanged.
     return (
         <>
             <EditProfileModal

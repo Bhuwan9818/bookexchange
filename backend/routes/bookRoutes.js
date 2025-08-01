@@ -8,7 +8,7 @@ const { uploadToCloudinary } = require('../config/cloudinary');
 router.post('/', auth, uploadToCloudinary, async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'Book cover image is required.' });
   const { title, author, condition } = req.body;
-  // if (type === 'sell' && (!price || price <= 0)) return res.status(400).json({ message: 'Price is required for selling a book.' });
+ 
   try {
     const newBookData = { title, author, condition, userId: req.userId, imageUrl: req.file.path };
     const newBook = new Book(newBookData);
@@ -22,22 +22,21 @@ router.post('/', auth, uploadToCloudinary, async (req, res) => {
 
 // GET route for public browsing - WITH DETAILED LOGGING
 router.get('/', async (req, res) => {
-  console.log('[BACKEND-INFO] /api/books GET route hit.'); // DEBUG 1
+  console.log('[BACKEND-INFO] /api/books GET route hit.'); 
   try {
     const { city, state } = req.query;
-    console.log(`[BACKEND-INFO] Query params received: city=${city}, state=${state}`); // DEBUG 2
+    console.log(`[BACKEND-INFO] Query params received: city=${city}, state=${state}`); 
 
     const filter = { status: 'available' };
     if (city) filter.city = new RegExp(city, 'i');
     if (state) filter.state = new RegExp(state, 'i');
     
-    console.log('[BACKEND-INFO] Using filter to find books:', filter); // DEBUG 3
+    console.log('[BACKEND-INFO] Using filter to find books:', filter); 
 
     const books = await Book.find(filter).populate('userId', 'username');
     
-    console.log(`[BACKEND-INFO] Found ${books.length} books.`); // DEBUG 4
+    console.log(`[BACKEND-INFO] Found ${books.length} books.`); 
 
-    // DEBUG 5: Log the first book if it exists to check its structure
     if (books.length > 0) {
       console.log('[BACKEND-INFO] Sample book data being sent:', JSON.stringify(books[0], null, 2));
     }
@@ -45,7 +44,7 @@ router.get('/', async (req, res) => {
     res.json(books);
 
   } catch (err) { 
-    console.error('[BACKEND-ERROR] CRASH in /api/books GET route:', err); // DEBUG 6
+    console.error('[BACKEND-ERROR] CRASH in /api/books GET route:', err); 
     res.status(500).send('Server Error'); 
   }
 });

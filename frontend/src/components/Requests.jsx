@@ -2,9 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
-// import ChatModal from './ChatModal';
-import ConfirmationModal from './ConfirmationModal';
-// import RatingModal from './RatingModal';
 
 export default function Requests({ token }) {
   const [requests, setRequests] = useState([]);
@@ -53,19 +50,6 @@ export default function Requests({ token }) {
     <div className="container py-2">
 
       <h2 className="mb-4">My Requests</h2>
-      {infoToShow && (
-        <div className="card bg-light mb-4 border-secondary">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <strong>Contact Information</strong>
-            <button type="button" className="btn-close" aria-label="Close" onClick={() => setContactInfo(null)}></button>
-          </div>
-          <div className="card-body">
-            <p><strong>Username:</strong> {infoToShow.username}</p>
-            <p><strong>Email:</strong> {infoToShow.email}</p>
-            <p className="mb-0"><strong>Phone:</strong> {infoToShow.phone}</p>
-          </div>
-        </div>
-      )}
       
       <div className="card card-ui">
         <div className="card-header bg-white py-3"><h4 className="mb-0">Incoming Requests</h4></div>
@@ -100,7 +84,7 @@ export default function Requests({ token }) {
                 </td>
                 <td className="text-end"><div className="d-flex justify-content-end gap-2">
                     {req.status === 'accepted' && req.deliveryStatus === 'sent' && (<button onClick={() => handleDeliverClick(req)} className="btn btn-success btn-sm">Confirm Receipt</button>)}
-                    {req.status === 'accepted' && (<><button onClick={() => viewContact(req._id)} className="btn btn-secondary btn-sm">Contact</button></>)}
+                    {/* {req.status === 'accepted' && (<><button onClick={() => viewContact(req._id)} className="btn btn-secondary btn-sm">Contact</button></>)} */}
                 </div></td>
             </tr>))}</tbody>
           </table>

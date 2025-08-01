@@ -28,8 +28,8 @@ router.get('/', auth, async (req, res) => {
         const requests = await Request.find({ $or: [{ requesterId: req.userId }, { ownerId: req.userId }] })
         .sort({ createdAt: -1 }) // -1 means descending order (newest first)    
         .populate('bookId', 'title')
-            .populate('requesterId', '_id username') // Ensure _id is populated
-            .populate('ownerId', '_id username');     // Ensure _id is populated
+            .populate('requesterId', '_id username') 
+            .populate('ownerId', '_id username');     
         res.json(requests);
     } catch (err) { 
         console.error(err.message);
@@ -53,26 +53,5 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-
-// GET /api/requests/:id/contact
-router.get('/:id/contact', auth, async (req, res) => {
-    try {
-        const request = await Request.findById(req.params.id).populate('ownerId requesterId');
-        if (!request) return res.status(404).json({ message: 'Request not found' });
-        const isOwner = request.ownerId._id.toString() === req.userId;
-        const isRequester = request.requesterId._id.toString() === req.userId;
-        if (request.status === 'accepted' && (isOwner || isRequester)) {
-            const contactInfo = {
-                owner: { _id: request.ownerId._id, username: request.ownerId.username, email: request.ownerId.email, phone: request.ownerId.phone },
-                requester: { _id: request.requesterId._id, username: request.requesterId.username, email: request.requesterId.email, phone: request.requesterId.phone }
-            };
-            return res.json(contactInfo);
-        }
-        res.status(403).json({ message: 'Access denied or request not accepted' });
-    } catch (err) { 
-        console.error(err.message);
-        res.status(500).send('Server Error'); 
-    }
-});
 
 module.exports = router;

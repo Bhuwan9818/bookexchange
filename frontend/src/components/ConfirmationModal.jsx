@@ -3,7 +3,7 @@ import './ConfirmationModal.css';
 
 /**
  * A reusable modal component for confirming user actions.
- * @param {string} confirmText - (Optional) The text for the confirmation button. Defaults to 'Confirm'.
+ * @param {string} confirmText 
  */
 export default function ConfirmationModal({ 
   show, 
