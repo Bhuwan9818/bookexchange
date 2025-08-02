@@ -12,7 +12,6 @@ import BrowseBooks from './components/BrowseBooks';
 import Requests from './components/Requests';
 import MyBooks from './components/MyBooks';
 import Profile from './components/Profile';
-// import Wishlist from './components/Wishlist';
 import './App.css';
 
 function App() {

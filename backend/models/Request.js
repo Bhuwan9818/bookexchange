@@ -12,7 +12,6 @@ const requestSchema = new mongoose.Schema({
     enum: ['pending', 'sent', 'received'], 
     default: 'pending' 
   },
-
   createdAt: { type: Date, default: Date.now },
 });
 
